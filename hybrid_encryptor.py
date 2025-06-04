@@ -27,7 +27,6 @@ def hybrid_encrypt(text, hybrid_key):
     caesar_text = caesar_encrypt(text, hybrid_key)
     rail_text = rail_fence_encrypt(caesar_text, hybrid_key)
     return rail_text
-git push origin main
 
 with open("plaintext.txt", "r", encoding="utf-8") as infile:
     plaintext = infile.read()
