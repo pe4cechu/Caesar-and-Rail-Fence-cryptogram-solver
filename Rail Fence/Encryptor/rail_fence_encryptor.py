@@ -14,7 +14,7 @@ def rail_fence_encrypt(text, num_rails):
     return ''.join(rails)
 
 
-with open("plaintext.txt", "r", encoding="utf-8") as infile:
+with open("../../plaintext.txt", "r", encoding="utf-8") as infile:
     plaintext = infile.read()
 
 key = int(input("Enter a key: "))

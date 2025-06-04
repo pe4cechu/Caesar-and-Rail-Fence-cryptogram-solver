@@ -31,7 +31,7 @@ def hybrid_encrypt(text, hybrid_key):
     return rail_text
 
 
-with open("plaintext.txt", "r", encoding="utf-8") as infile:
+with open("../../plaintext.txt", "r", encoding="utf-8") as infile:
     plaintext = infile.read()
 
 key = int(input("Enter a key: "))

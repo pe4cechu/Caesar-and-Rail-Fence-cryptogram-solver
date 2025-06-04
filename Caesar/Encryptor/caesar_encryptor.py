@@ -9,7 +9,7 @@ def caesar_encrypt(text, shift):
     return result
 
 
-with open("plaintext.txt", "r", encoding="utf-8") as infile:
+with open("../../plaintext.txt", "r", encoding="utf-8") as infile:
     plaintext = infile.read()
 
 key = int(input("Enter a key: "))
