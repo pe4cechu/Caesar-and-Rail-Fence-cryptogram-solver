@@ -33,9 +33,14 @@ with open("plaintext.txt", "r", encoding="utf-8") as infile:
 
 # key = int(input("Enter a key: "))
 key = 3
-ciphertext = hybrid_encrypt(plaintext, key)
+
+with open("caesar_ciphertext.txt", "w", encoding="utf-8") as outfile:
+    outfile.write(caesar_encrypt(plaintext, key))
+
+with open("rail_fence_ciphertext.txt", "w", encoding="utf-8") as outfile:
+    outfile.write(rail_fence_encrypt(plaintext, key))
 
 with open("hybrid_ciphertext.txt", "w", encoding="utf-8") as outfile:
-    outfile.write(ciphertext)
+    outfile.write(hybrid_encrypt(plaintext, key))
 
-print("Hybrid encryption complete! See hybrid_ciphertext.txt for the result.")
+print("Ciphertext written to caesar_ciphertext.txt, rail_fence_ciphertext.txt, and hybrid_ciphertext.txt")
