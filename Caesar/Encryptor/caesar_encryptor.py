@@ -1,6 +1,7 @@
-def caesar_encrypt(text, shift):
+def caesar_encrypt(plaintext: str, shift: int) -> str:
+    """Encrypts the given plaintext using Caesar cipher with the specified shift."""
     result = ""
-    for char in text:
+    for char in plaintext:
         if char.isalpha():
             base = ord('A') if char.isupper() else ord('a')
             result += chr((ord(char) - base + shift) % 26 + base)
@@ -8,18 +9,36 @@ def caesar_encrypt(text, shift):
             result += char
     return result
 
+def read_file(file_path: str) -> str:
+    """Reads and returns the entire content of the provided file path."""
+    with open(file_path, "r", encoding="utf-8") as infile:
+        return infile.read()
 
-with open("../../plaintext.txt", "r", encoding="utf-8") as infile:
-    plaintext = infile.read()
+def write_file(file_path: str, text: str) -> None:
+    """Writes the given text to the provided file path."""
+    with open(file_path, "w", encoding="utf-8") as outfile:
+        outfile.write(text)
 
-key = int(input("Enter a key: "))
+def main():
+    input_path = "../../plaintext.txt"
+    output_path = "../Text/caesar_ciphertext.txt"
 
-ciphertext = caesar_encrypt(plaintext, key)
+    plaintext = read_file(input_path)
 
-print("\033[92m\nEncrypted ciphertext:")
-print(f"\033[97m{ciphertext}")
+    try:
+        key = int(input("Enter a key: "))
+    except ValueError:
+        print("\033[91mInvalid key. Please enter an integer.\033[97m")
+        return
 
-with open("../Text/caesar_ciphertext.txt", "w", encoding="utf-8") as outfile:
-    outfile.write(ciphertext)
+    ciphertext = caesar_encrypt(plaintext, key)
 
-print("\033[96m\nCiphertext written to caesar_ciphertext.txt\033[97m")
+    print("\033[92m\nEncrypted ciphertext:")
+    print(f"\033[97m{ciphertext}")
+
+    write_file(output_path, ciphertext)
+
+    print("\033[96m\nCiphertext written to caesar_ciphertext.txt\033[97m")
+
+if __name__ == "__main__":
+    main()
