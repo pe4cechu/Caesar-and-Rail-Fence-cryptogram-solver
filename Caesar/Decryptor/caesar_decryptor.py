@@ -12,7 +12,7 @@ def caesar_decrypt(ciphertext, shift):
 with open("../Text/caesar_ciphertext.txt", "r", encoding="utf-8") as infile:
     ciphertext = infile.read()
 
-key = int(input("\033[92mEnter the decryption key (shift): \033[97m"))
+key = int(input("Enter the decryption key (shift): "))
 
 plaintext = caesar_decrypt(ciphertext, key)
 
