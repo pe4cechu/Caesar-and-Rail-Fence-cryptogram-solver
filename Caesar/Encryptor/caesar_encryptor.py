@@ -14,7 +14,12 @@ with open("../../plaintext.txt", "r", encoding="utf-8") as infile:
 
 key = int(input("Enter a key: "))
 
-with open("caesar_ciphertext.txt", "w", encoding="utf-8") as outfile:
-    outfile.write(caesar_encrypt(plaintext, key))
+ciphertext = caesar_encrypt(plaintext, key)
 
-print("Ciphertext written to caesar_ciphertext.txt")
+print("\033[92m\nEncrypted ciphertext:")
+print(f"\033[97m{ciphertext}")
+
+with open("../Text/caesar_ciphertext.txt", "w", encoding="utf-8") as outfile:
+    outfile.write(ciphertext)
+
+print("\033[96m\nCiphertext written to caesar_ciphertext.txt\033[97m")
