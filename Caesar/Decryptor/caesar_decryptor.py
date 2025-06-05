@@ -1,6 +1,6 @@
-def caesar_decrypt(ciphertext, shift):
+def caesar_decrypt(cipher, shift):
     plaintext = ""
-    for char in ciphertext:
+    for char in cipher:
         if char.isalpha():
             base = ord('A') if char.isupper() else ord('a')
             decrypted = chr((ord(char) - base - shift) % 26 + base)

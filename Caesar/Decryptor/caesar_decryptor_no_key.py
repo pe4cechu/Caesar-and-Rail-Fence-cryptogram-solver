@@ -1,4 +1,3 @@
-from math import sqrt
 from nostril import nonsense
 
 def frequency_profile():
