@@ -1,5 +1,4 @@
 def caesar_encrypt(plaintext: str, shift: int) -> str:
-    """Encrypts the given plaintext using Caesar cipher with the specified shift."""
     result = ""
     for char in plaintext:
         if char.isalpha():
@@ -10,12 +9,10 @@ def caesar_encrypt(plaintext: str, shift: int) -> str:
     return result
 
 def read_file(file_path: str) -> str:
-    """Reads and returns the entire content of the provided file path."""
     with open(file_path, "r", encoding="utf-8") as infile:
         return infile.read()
 
 def write_file(file_path: str, text: str) -> None:
-    """Writes the given text to the provided file path."""
     with open(file_path, "w", encoding="utf-8") as outfile:
         outfile.write(text)
 
