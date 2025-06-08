@@ -2,19 +2,22 @@ def caesar_encrypt(plaintext: str, shift: int) -> str:
     result = ""
     for char in plaintext:
         if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
+            base = ord("A") if char.isupper() else ord("a")
             result += chr((ord(char) - base + shift) % 26 + base)
         else:
             result += char
     return result
 
+
 def read_file(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as infile:
         return infile.read()
 
+
 def write_file(file_path: str, text: str) -> None:
     with open(file_path, "w", encoding="utf-8") as outfile:
         outfile.write(text)
+
 
 def main():
     input_path = "../../plaintext.txt"
@@ -36,6 +39,7 @@ def main():
     write_file(output_path, ciphertext)
 
     print("\033[96m\nCiphertext written to caesar_ciphertext.txt\033[97m")
+
 
 if __name__ == "__main__":
     main()

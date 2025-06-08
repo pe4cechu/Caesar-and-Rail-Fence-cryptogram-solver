@@ -14,26 +14,29 @@ def rail_fence_decrypt(ciphertext: str, num_rails: int) -> str:
     rails = []
     idx = 0
     for count in rail_counts:
-        rails.append(list(ciphertext[idx:idx+count]))
+        rails.append(list(ciphertext[idx : idx + count]))
         idx += count
     result = []
     rail_indices = [0] * num_rails
     for r in pattern:
         result.append(rails[r][rail_indices[r]])
         rail_indices[r] += 1
-    return ''.join(result)
+    return "".join(result)
+
 
 def read_file(file_path: str) -> str:
     with open(file_path, "r", encoding="utf-8") as infile:
         return infile.read()
 
+
 def write_file(file_path: str, content: str) -> None:
     with open(file_path, "w", encoding="utf-8") as outfile:
         outfile.write(content)
 
+
 def main():
-    input_path = "../Text/rail_fence_ciphertext.txt"
-    output_path = "../Text/rail_fence_plaintext.txt"
+    input_path = "../Text/railfence_ciphertext.txt"
+    output_path = "../Text/railfence_plaintext.txt"
     ciphertext = read_file(input_path)
     try:
         key = int(input("Enter a key: "))
@@ -45,6 +48,7 @@ def main():
     print(f"\033[97m{plaintext}")
     write_file(output_path, plaintext)
     print(f"\033[96m\nPlaintext written to {output_path}\033[97m")
+
 
 if __name__ == "__main__":
     main()

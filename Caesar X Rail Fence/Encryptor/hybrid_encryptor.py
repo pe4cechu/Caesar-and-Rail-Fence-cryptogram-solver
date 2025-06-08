@@ -2,7 +2,7 @@ def caesar_encrypt(text, shift):
     result = ""
     for char in text:
         if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
+            base = ord("A") if char.isupper() else ord("a")
             result += chr((ord(char) - base + shift) % 26 + base)
         else:
             result += char
@@ -12,7 +12,7 @@ def caesar_encrypt(text, shift):
 def rail_fence_encrypt(text, num_rails):
     if num_rails <= 1 or num_rails >= len(text):
         return text
-    rails = ['' for _ in range(num_rails)]
+    rails = ["" for _ in range(num_rails)]
     rail = 0
     direction = 1
     for char in text:
@@ -22,7 +22,7 @@ def rail_fence_encrypt(text, num_rails):
         elif rail == num_rails - 1:
             direction = -1
         rail += direction
-    return ''.join(rails)
+    return "".join(rails)
 
 
 def hybrid_encrypt(text, hybrid_key):

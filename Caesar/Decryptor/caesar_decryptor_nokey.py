@@ -1,5 +1,6 @@
 from nostril import nonsense
 
+
 def frequency_profile():
     return {
         "E": 12.31,
@@ -30,15 +31,17 @@ def frequency_profile():
         "Z": 0.09,
     }
 
+
 def caesar_decrypt(ciphertext: str, key: int) -> str:
     plaintext = ""
     for char in ciphertext:
         if char.isalpha():
-            base = ord('A') if char.isupper() else ord('a')
+            base = ord("A") if char.isupper() else ord("a")
             plaintext += chr((ord(char) - base - key) % 26 + base)
         else:
             plaintext += char
     return plaintext
+
 
 def letter_occurrence(text: str) -> dict:
     occur = {}
@@ -51,11 +54,13 @@ def letter_occurrence(text: str) -> dict:
         occur[letter] = (occur[letter] / total) * 100 if total > 0 else 0
     return occur
 
+
 def frequency_distance(occ: dict, profile: dict) -> float:
     diff = 0
     for letter, freq in occ.items():
         diff += (freq - profile.get(letter, 0)) ** 2
     return diff
+
 
 def caesar_crack(ciphertext: str):
     occ_dict = frequency_profile()
@@ -69,27 +74,52 @@ def caesar_crack(ciphertext: str):
         results.append((is_meaningful, diff, key, plaintext))
 
     meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
-    non_meaningful_results = sorted([r for r in results if not r[0]], key=lambda x: x[1])
+    non_meaningful_results = sorted(
+        [r for r in results if not r[0]], key=lambda x: x[1]
+    )
 
     if meaningful_results:
-        best_key, best_plaintext, best_mismatch = meaningful_results[0][2], meaningful_results[0][3], meaningful_results[0][1]
+        best_key, best_plaintext, best_mismatch = (
+            meaningful_results[0][2],
+            meaningful_results[0][3],
+            meaningful_results[0][1],
+        )
     else:
-        best_key, best_plaintext, best_mismatch = non_meaningful_results[0][2], non_meaningful_results[0][3], non_meaningful_results[0][1]
+        best_key, best_plaintext, best_mismatch = (
+            non_meaningful_results[0][2],
+            non_meaningful_results[0][3],
+            non_meaningful_results[0][1],
+        )
 
-    return meaningful_results, non_meaningful_results, best_key, best_plaintext, best_mismatch
+    return (
+        meaningful_results,
+        non_meaningful_results,
+        best_key,
+        best_plaintext,
+        best_mismatch,
+    )
+
 
 def main():
     with open("../Text/caesar_ciphertext.txt", "r", encoding="utf-8") as infile:
         ciphertext = infile.read()
 
-    meaningful_results, non_meaningful_results, best_key, best_plaintext, best_mismatch = caesar_crack(ciphertext)
+    (
+        meaningful_results,
+        non_meaningful_results,
+        best_key,
+        best_plaintext,
+        best_mismatch,
+    ) = caesar_crack(ciphertext)
 
+    print("=== MEANINGFUL CANDIDATES ===")
     for is_meaningful, mismatch, key, text in meaningful_results:
         print(
             f"\033[92mKey: {key} - Mismatch: {mismatch} - Meaningful: True\n"
             f"\033[97m{text}\n"
         )
 
+    print("=== NON-MEANINGFUL CANDIDATES ===")
     for is_meaningful, mismatch, key, text in non_meaningful_results:
         print(
             f"\033[91mKey: {key} - Mismatch: {mismatch} - Meaningful: False\n"
@@ -97,7 +127,9 @@ def main():
         )
 
     if not meaningful_results:
-        print("\033[93mWarning: No meaningful plaintext found. Using lowest mismatch instead.\033[97m")
+        print(
+            "\033[93mWarning: No meaningful plaintext found. Using lowest mismatch instead.\033[97m"
+        )
 
     with open("../Text/caesar_plaintext.txt", "w", encoding="utf-8") as outfile:
         outfile.write(best_plaintext)
@@ -107,6 +139,7 @@ def main():
         f"\033[95m(Key: {best_key}, Mismatch: {best_mismatch})\n"
         f"\033[97m{best_plaintext}"
     )
+
 
 if __name__ == "__main__":
     main()
