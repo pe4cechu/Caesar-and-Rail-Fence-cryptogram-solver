@@ -1,6 +1,6 @@
 import enchant
 from nostril import nonsense
-from railfence_decryptor import rail_fence_decrypt
+from hybrid_decryptor import caesar_decrypt, rail_fence_decrypt
 
 d = enchant.Dict("en_US")
 
@@ -10,9 +10,9 @@ def read_file(file_path: str) -> str:
         return infile.read()
 
 
-def write_file(file_path: str, content: str) -> None:
+def write_file(file_path: str, text: str) -> None:
     with open(file_path, "w", encoding="utf-8") as outfile:
-        outfile.write(content)
+        outfile.write(text)
 
 
 def is_meaningful_dict(text: str, threshold: float = 0.03) -> bool:
@@ -24,7 +24,7 @@ def is_meaningful_dict(text: str, threshold: float = 0.03) -> bool:
     return gibberish_ratio <= threshold
 
 
-def rail_fence_crack(ciphertext: str, max_key: int = 99999):
+def hybrid_crack(ciphertext: str, max_key: int = 9999):
     thresholds = [
         0.01,
         0.015,
@@ -44,7 +44,7 @@ def rail_fence_crack(ciphertext: str, max_key: int = 99999):
     for threshold in thresholds:
         results = []
         for key in range(1, max_key + 1):
-            plaintext = rail_fence_decrypt(ciphertext, key)
+            plaintext = caesar_decrypt(rail_fence_decrypt(ciphertext, key), key)
             if not nonsense(plaintext.upper()):
                 is_meaningful = is_meaningful_dict(plaintext, threshold=threshold)
             else:
@@ -53,14 +53,19 @@ def rail_fence_crack(ciphertext: str, max_key: int = 99999):
             if is_meaningful:
                 break
 
-        meaningful_results = [r for r in results if r[0]]
-        non_meaningful_results = [r for r in results if not r[0]]
-        if meaningful_results:
-            best_key, best_plaintext = (
-                meaningful_results[0][1],
-                meaningful_results[0][2],
-            )
-            return meaningful_results, non_meaningful_results, best_key, best_plaintext
+            meaningful_results = [r for r in results if r[0]]
+            non_meaningful_results = [r for r in results if not r[0]]
+            if meaningful_results:
+                best_key, best_plaintext = (
+                    meaningful_results[0][1],
+                    meaningful_results[0][2],
+                )
+                return (
+                    meaningful_results,
+                    non_meaningful_results,
+                    best_key,
+                    best_plaintext,
+                )
 
     threshold = thresholds[-1]
     results = []
@@ -84,12 +89,13 @@ def rail_fence_crack(ciphertext: str, max_key: int = 99999):
 
 
 def main():
-    input_path = "../Text/railfence_ciphertext.txt"
-    output_path = "../Text/railfence_plaintext.txt"
+    input_path = "../Text/hybrid_ciphertext.txt"
+    output_path = "../Text/hybrid_plaintext.txt"
 
     ciphertext = read_file(input_path)
-    meaningful_results, non_meaningful_results, best_key, best_plaintext = (
-        rail_fence_crack(ciphertext, max_key=9999)
+
+    meaningful_results, non_meaningful_results, best_key, best_plaintext = hybrid_crack(
+        ciphertext
     )
 
     print("=== MEANINGFUL CANDIDATES ===")

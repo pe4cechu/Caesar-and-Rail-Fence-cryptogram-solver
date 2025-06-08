@@ -1,4 +1,5 @@
 from nostril import nonsense
+from caesar_decryptor import caesar_decrypt
 
 
 def frequency_profile():
@@ -30,17 +31,6 @@ def frequency_profile():
         "J": 0.1,
         "Z": 0.09,
     }
-
-
-def caesar_decrypt(ciphertext: str, key: int) -> str:
-    plaintext = ""
-    for char in ciphertext:
-        if char.isalpha():
-            base = ord("A") if char.isupper() else ord("a")
-            plaintext += chr((ord(char) - base - key) % 26 + base)
-        else:
-            plaintext += char
-    return plaintext
 
 
 def letter_occurrence(text: str) -> dict:
