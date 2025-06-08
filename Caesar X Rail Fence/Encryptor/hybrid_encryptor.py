@@ -1,42 +1,38 @@
-def caesar_encrypt(text, shift):
-    result = ""
-    for char in text:
-        if char.isalpha():
-            base = ord("A") if char.isupper() else ord("a")
-            result += chr((ord(char) - base + shift) % 26 + base)
-        else:
-            result += char
-    return result
+from Caesar.Encryptor.caesar_encryptor import caesar_encrypt
+from RailFence.Encryptor.railfence_encryptor import rail_fence_encrypt
 
 
-def rail_fence_encrypt(text, num_rails):
-    if num_rails <= 1 or num_rails >= len(text):
-        return text
-    rails = ["" for _ in range(num_rails)]
-    rail = 0
-    direction = 1
-    for char in text:
-        rails[rail] += char
-        if rail == 0:
-            direction = 1
-        elif rail == num_rails - 1:
-            direction = -1
-        rail += direction
-    return "".join(rails)
+def read_file(file_path: str) -> str:
+    with open(file_path, "r", encoding="utf-8") as infile:
+        return infile.read()
 
 
-def hybrid_encrypt(text, hybrid_key):
-    caesar_text = caesar_encrypt(text, hybrid_key)
-    rail_text = rail_fence_encrypt(caesar_text, hybrid_key)
-    return rail_text
+def write_file(file_path: str, text: str) -> None:
+    with open(file_path, "w", encoding="utf-8") as outfile:
+        outfile.write(text)
 
 
-with open("../../plaintext.txt", "r", encoding="utf-8") as infile:
-    plaintext = infile.read()
+def main():
+    input_path = "../../plaintext.txt"
+    output_path = "../Text/hybrid_ciphertext.txt"
 
-key = int(input("Enter a key: "))
+    plaintext = read_file(input_path)
 
-with open("hybrid_ciphertext.txt", "w", encoding="utf-8") as outfile:
-    outfile.write(hybrid_encrypt(plaintext, key))
+    try:
+        key = int(input("Enter a key: "))
+    except ValueError:
+        print("\033[91mInvalid key. Please enter an integer.\033[97m")
+        return
 
-print("Ciphertext written to hybrid_ciphertext.txt")
+    ciphertext = rail_fence_encrypt(caesar_encrypt(plaintext, key), key)
+
+    print("\033[92m\nEncrypted ciphertext:")
+    print(f"\033[97m{ciphertext}")
+
+    write_file(output_path, ciphertext)
+
+    print("\033[96m\nCiphertext written to hybrid_ciphertext.txt\033[97m")
+
+
+if __name__ == "__main__":
+    main()
