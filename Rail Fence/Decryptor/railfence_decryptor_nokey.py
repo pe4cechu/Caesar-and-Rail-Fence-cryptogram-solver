@@ -49,7 +49,7 @@ def is_meaningful_dict(text: str, threshold: float = 0.03) -> bool:
     return gibberish_ratio <= threshold
 
 
-def rail_fence_crack(ciphertext: str, max_key: int = 9999):
+def rail_fence_crack(ciphertext: str, max_key: int = 99999):
     thresholds = [
         0.01,
         0.015,
@@ -117,13 +117,13 @@ def main():
         rail_fence_crack(ciphertext, max_key=9999)
     )
 
-    # print("=== MEANINGFUL CANDIDATES ===")
-    # for is_meaningful, key, text in meaningful_results:
-    #     print(f"\033[92mKey: {key} - Meaningful: True\n" f"\033[97m{text}\n")
-    #
-    # print("=== NON-MEANINGFUL CANDIDATES ===")
-    # for is_meaningful, key, text in non_meaningful_results:
-    #     print(f"\033[91mKey: {key} - Meaningful: False\n" f"\033[97m{text}\n")
+    print("=== MEANINGFUL CANDIDATES ===")
+    for is_meaningful, key, text in meaningful_results:
+        print(f"\033[92mKey: {key} - Meaningful: True\n" f"\033[97m{text}\n")
+
+    print("=== NON-MEANINGFUL CANDIDATES ===")
+    for is_meaningful, key, text in non_meaningful_results:
+        print(f"\033[91mKey: {key} - Meaningful: False\n" f"\033[97m{text}\n")
 
     if not meaningful_results:
         print("\033[93mWarning: No meaningful plaintext found.\033[97m")
