@@ -1,7 +1,6 @@
 from nostril import nonsense
-
 from Utils.io import read_file, print_plaintext_no_key_with_mismatch
-
+from Utils.dict import is_meaningful_dict
 
 def frequency_profile():
     return {
@@ -33,7 +32,6 @@ def frequency_profile():
         "Z": 0.074,
     }
 
-
 def caesar_decrypt(ciphertext: str, key: int) -> str:
     plaintext = ""
     for char in ciphertext:
@@ -43,7 +41,6 @@ def caesar_decrypt(ciphertext: str, key: int) -> str:
         else:
             plaintext += char
     return plaintext
-
 
 def letter_occurrence(text: str) -> dict:
     occur = {}
@@ -56,81 +53,60 @@ def letter_occurrence(text: str) -> dict:
         occur[letter] = (occur[letter] / total) * 100 if total > 0 else 0
     return occur
 
-
 def frequency_distance(occ: dict, profile: dict) -> float:
     diff = 0
     for letter, freq in occ.items():
         diff += (freq - profile.get(letter, 0)) ** 2
     return diff
 
-
 def caesar_crack(ciphertext: str):
-    thresholds = [
-        0.01,
-        0.015,
-        0.02,
-        0.025,
-        0.03,
-        0.035,
-        0.04,
-        0.05,
-        0.06,
-        0.08,
-        0.10,
-        0.12,
-        0.15,
-    ]
-
     occ_dict = frequency_profile()
     results = []
-
     for key in range(26):
         plaintext = caesar_decrypt(ciphertext, key)
         occur = letter_occurrence(plaintext)
         diff = frequency_distance(occur, occ_dict)
-        is_meaningful = not nonsense(plaintext.upper())
-        results.append((is_meaningful, round(diff, 4), key, plaintext))
-
-    meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
-    non_meaningful_results = sorted(
-        [r for r in results if not r[0]], key=lambda x: x[1]
-    )
-
+        if not nonsense(plaintext.upper()):
+            is_meaningful, gibberish_ratio = is_meaningful_dict(
+                plaintext, threshold=1
+            )
+        else:
+            is_meaningful, gibberish_ratio = False, None
+        results.append((
+            is_meaningful,
+            round(diff, 4),
+            key,
+            plaintext,
+            round(gibberish_ratio, 4) if gibberish_ratio is not None else None,
+        ))
+    meaningful_results = [r for r in results if r[0]]
+    non_meaningful_results = [r for r in results if not r[0]]
     if meaningful_results:
-        key, plaintext, mismatch = (
-            meaningful_results[0][2],
-            meaningful_results[0][3],
-            meaningful_results[0][1],
-        )
+        best_result = meaningful_results[0]
     else:
-        key, plaintext, mismatch = (
-            non_meaningful_results[0][2],
-            non_meaningful_results[0][3],
-            non_meaningful_results[0][1],
-        )
-
+        best_result = non_meaningful_results[0] if non_meaningful_results else (None, None, None, None, None)
+    _, mismatch, key, plaintext, gibberish_ratio = best_result
     return (
         meaningful_results,
         non_meaningful_results,
         key,
         plaintext,
+        gibberish_ratio,
         mismatch,
     )
-
 
 def main():
     input_path = "../Text/caesar_ciphertext.txt"
     output_path = "../Text/caesar_plaintext.txt"
-
     ciphertext = read_file(input_path)
     (
         meaningful_results,
         non_meaningful_results,
         key,
         plaintext,
+        gibberish_ratio,
         mismatch,
     ) = caesar_crack(ciphertext)
-
     print_plaintext_no_key_with_mismatch(
         meaningful_results,
         non_meaningful_results,
@@ -139,7 +115,6 @@ def main():
         plaintext,
         output_path,
     )
-
 
 if __name__ == "__main__":
     main()

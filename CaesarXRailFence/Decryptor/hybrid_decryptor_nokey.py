@@ -39,7 +39,7 @@ def hybrid_crack(ciphertext: str, max_key: int = 9999):
             diff = frequency_distance(occur, occ_dict)
             if not nonsense(plaintext.upper()):
                 is_meaningful, gibberish_ratio = is_meaningful_dict(
-                    plaintext, threshold=th
+                    plaintext, threshold = th
                 )
             else:
                 is_meaningful, gibberish_ratio = False, None
@@ -52,10 +52,8 @@ def hybrid_crack(ciphertext: str, max_key: int = 9999):
                     round(gibberish_ratio, 4) if gibberish_ratio is not None else None,
                 )
             )
-            meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
-            non_meaningful_results = sorted(
-                [r for r in results if not r[0]], key=lambda x: x[1]
-            )
+            meaningful_results = [r for r in results if r[0]]
+            non_meaningful_results = [r for r in results if not r[0]]
             if is_meaningful:
                 key, plaintext, mismatch = (
                     meaningful_results[0][2],
@@ -71,10 +69,8 @@ def hybrid_crack(ciphertext: str, max_key: int = 9999):
                 )
 
 
-    meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
-    non_meaningful_results = sorted(
-            [r for r in results if not r[0]], key=lambda x: x[1]
-        )
+    meaningful_results = [r for r in results if r[0]]
+    non_meaningful_results = [r for r in results if not r[0]]
 
     if meaningful_results:
         key, plaintext, mismatch = (
@@ -95,6 +91,7 @@ def hybrid_crack(ciphertext: str, max_key: int = 9999):
         plaintext,
         mismatch,
     )
+
 
 
 def main():
