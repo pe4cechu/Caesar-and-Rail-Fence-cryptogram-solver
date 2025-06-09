@@ -11,7 +11,7 @@ from Caesar.Decryptor.caesar_decryptor_nokey import (
 from RailFence.Decryptor.railfence_decryptor import rail_fence_decrypt
 
 
-def hybrid_crack(ciphertext: str, max_key: int = 99999):
+def hybrid_crack(ciphertext: str, max_key: int = 9999):
     thresholds = [
         0.01,
         0.015,
@@ -27,55 +27,55 @@ def hybrid_crack(ciphertext: str, max_key: int = 99999):
         0.12,
         0.15,
     ]
-    occ_dict = frequency_profile()
 
-    for threshold in thresholds:
+    occ_dict = frequency_profile()
+    results = []
+
+    for th in thresholds:
         results = []
         for key in range(1, max_key + 1):
             plaintext = caesar_decrypt(rail_fence_decrypt(ciphertext, key), key)
             occur = letter_occurrence(plaintext)
             diff = frequency_distance(occur, occ_dict)
             if not nonsense(plaintext.upper()):
-                is_meaningful = is_meaningful_dict(plaintext, threshold=threshold)
+                is_meaningful, gibberish_ratio = is_meaningful_dict(
+                    plaintext, threshold=th
+                )
             else:
-                is_meaningful = False
-            results.append((is_meaningful, diff, key, plaintext))
+                is_meaningful, gibberish_ratio = False, None
+            results.append(
+                (
+                    is_meaningful,
+                    round(diff, 4),
+                    key,
+                    plaintext,
+                    round(gibberish_ratio, 4) if gibberish_ratio is not None else None,
+                )
+            )
+            meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
+            non_meaningful_results = sorted(
+                [r for r in results if not r[0]], key=lambda x: x[1]
+            )
             if is_meaningful:
-                break
+                key, plaintext, mismatch = (
+                    meaningful_results[0][2],
+                    meaningful_results[0][3],
+                    meaningful_results[0][1],
+                )
+                return (
+                    meaningful_results,
+                    non_meaningful_results,
+                    key,
+                    plaintext,
+                    mismatch,
+                )
 
-        meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
-        non_meaningful_results = sorted(
-            [r for r in results if not r[0]], key=lambda x: x[1]
-        )
-        if meaningful_results:
-            key, plaintext, mismatch = (
-                meaningful_results[0][2],
-                meaningful_results[0][3],
-                meaningful_results[0][1],
-            )
-            return (
-                meaningful_results,
-                non_meaningful_results,
-                key,
-                plaintext,
-                mismatch,
-            )
 
-    threshold = thresholds[-1]
-    results = []
-    for key in range(1, max_key + 1):
-        plaintext = caesar_decrypt(rail_fence_decrypt(ciphertext, key), key)
-        occur = letter_occurrence(plaintext)
-        diff = frequency_distance(occur, occ_dict)
-        if not nonsense(plaintext.upper()):
-            is_meaningful = is_meaningful_dict(plaintext, threshold=threshold)
-        else:
-            is_meaningful = False
-        results.append((is_meaningful, diff, key, plaintext))
     meaningful_results = sorted([r for r in results if r[0]], key=lambda x: x[1])
     non_meaningful_results = sorted(
-        [r for r in results if not r[0]], key=lambda x: x[1]
-    )
+            [r for r in results if not r[0]], key=lambda x: x[1]
+        )
+
     if meaningful_results:
         key, plaintext, mismatch = (
             meaningful_results[0][2],

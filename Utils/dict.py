@@ -9,4 +9,4 @@ def is_meaningful_dict(text: str, threshold: float) -> bool:
         return False
     non_dict_words = sum(1 for w in words if not d.check(w))
     gibberish_ratio = non_dict_words / len(words)
-    return gibberish_ratio <= threshold
+    return gibberish_ratio <= threshold, gibberish_ratio

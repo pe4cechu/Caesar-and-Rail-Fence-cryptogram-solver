@@ -33,57 +33,64 @@ def print_plaintext(plaintext, output_path):
 
 
 def print_plaintext_no_key(
-    meaningful_results, non_meaningful_results, best_key, best_plaintext, output_path
+    meaningful_results, non_meaningful_results, key, plaintext, output_path
 ):
     print("=== MEANINGFUL CANDIDATES ===")
-    for is_meaningful, key, text in meaningful_results:
-        print(f"\033[92mKey: {key} - Meaningful: True\n" f"\033[97m{text}\n")
+    for is_meaningful, key, text, ratio in meaningful_results:
+        print(
+            f"\033[92mKey: {key} - False Positive Ratio: {ratio} - Meaningful: True\n"
+            f"\033[97m{text}\n"
+        )
 
     print("=== NON-MEANINGFUL CANDIDATES ===")
-    for is_meaningful, key, text in non_meaningful_results:
-        print(f"\033[91mKey: {key} - Meaningful: False\n" f"\033[97m{text}\n")
+    for is_meaningful, key, text, ratio in non_meaningful_results:
+        print(
+            f"\033[91mKey: {key} - False Positive Ratio: {ratio} - Meaningful: False\n"
+            f"\033[97m{text}\n"
+        )
 
     if not meaningful_results:
         print("\033[93mWarning: No meaningful plaintext found.\033[97m")
 
-    write_file(output_path, best_plaintext)
-    print(
-        f"\033[96mSelected plaintext written to {output_path}: "
-        f"\033[95m(Key: {best_key})\n"
-        f"\033[97m{best_plaintext}"
-    )
+    if meaningful_results:
+        write_file(output_path, plaintext)
+        print(
+            f"\033[96mSelected plaintext written to {output_path}: "
+            f"\033[95m(Key: {key} - False Positive Ratio: {meaningful_results[0][3]})\n"
+            f"\033[97m{plaintext}"
+        )
 
 
 def print_plaintext_no_key_with_mismatch(
     meaningful_results,
     non_meaningful_results,
-    best_key,
-    best_mismatch,
-    best_plaintext,
+    key,
+    mismatch,
+    plaintext,
     output_path,
 ):
-    for is_meaningful, mismatch, key, text in meaningful_results:
+    print("=== MEANINGFUL CANDIDATES ===")
+    for is_meaningful, mismatch, key, text, ratio in meaningful_results:
         print(
-            f"\033[92mKey: {key} - Mismatch: {mismatch} - Meaningful: True\n"
+            f"\033[92mKey: {key} - Mismatch: {mismatch} - False Positive Ratio: {ratio}  - Meaningful: True\n"
             f"\033[97m{text}\n"
         )
 
-    for is_meaningful, mismatch, key, text in non_meaningful_results:
+    print("=== NON-MEANINGFUL CANDIDATES ===")
+    for is_meaningful, mismatch, key, text, ratio in non_meaningful_results:
         print(
-            f"\033[91mKey: {key} - Mismatch: {mismatch} - Meaningful: False\n"
+            f"\033[91mKey: {key} - Mismatch: {mismatch} - False Positive Ratio: {ratio}  - Meaningful: False\n"
             f"\033[97m{text}\n"
         )
 
     if not meaningful_results:
+        print("\033[93mWarning: No meaningful plaintext found.\033[97m")
+    if meaningful_results:
+        with open(f"{output_path}", "w", encoding="utf-8") as outfile:
+            outfile.write(plaintext)
+
         print(
-            "\033[93mWarning: No meaningful plaintext found. Using lowest mismatch instead.\033[97m"
+            f"\033[96mSelected plaintext written to {output_path}: "
+            f"\033[95m(Key: {key}, Mismatch: {mismatch}, False Positive Ratio: {meaningful_results[0][4]})\n"
+            f"\033[97m{plaintext}"
         )
-
-    with open(f"{output_path}.txt", "w", encoding="utf-8") as outfile:
-        outfile.write(best_plaintext)
-
-    print(
-        f"\033[96mSelected plaintext written to {output_path}.txt: "
-        f"\033[95m(Key: {best_key}, Mismatch: {best_mismatch})\n"
-        f"\033[97m{best_plaintext}"
-    )

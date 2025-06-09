@@ -5,7 +5,7 @@ from Utils.dict import is_meaningful_dict
 from RailFence.Decryptor.railfence_decryptor import rail_fence_decrypt
 
 
-def rail_fence_crack(ciphertext: str, max_key: int = 99999):
+def rail_fence_crack(ciphertext: str, max_key: int = 9999):
     thresholds = [
         0.01,
         0.015,
@@ -22,46 +22,39 @@ def rail_fence_crack(ciphertext: str, max_key: int = 99999):
         0.15,
     ]
 
-    for threshold in thresholds:
+    results = []
+    for th in thresholds:
         results = []
         for key in range(1, max_key + 1):
             plaintext = rail_fence_decrypt(ciphertext, key)
             if not nonsense(plaintext.upper()):
-                is_meaningful = is_meaningful_dict(plaintext, threshold=threshold)
+                is_meaningful, gibberish_ratio = is_meaningful_dict(
+                    plaintext, threshold=th
+                )
             else:
-                is_meaningful = False
-            results.append((is_meaningful, key, plaintext))
-            if is_meaningful:
-                break
-
-        meaningful_results = [r for r in results if r[0]]
-        non_meaningful_results = [r for r in results if not r[0]]
-        if meaningful_results:
-            best_key, best_plaintext = (
-                meaningful_results[0][1],
-                meaningful_results[0][2],
+                is_meaningful, gibberish_ratio = False, None
+            results.append(
+                (
+                    is_meaningful,
+                    key,
+                    plaintext,
+                    round(gibberish_ratio, 4) if gibberish_ratio is not None else None,
+                )
             )
-            return meaningful_results, non_meaningful_results, best_key, best_plaintext
+            if is_meaningful:
+                meaningful_results = [results[-1]]
+                non_meaningful_results = results[:-1]
+                key, plaintext = key, plaintext
+                return meaningful_results, non_meaningful_results, key, plaintext
 
-    threshold = thresholds[-1]
-    results = []
-    for key in range(1, max_key + 1):
-        plaintext = rail_fence_decrypt(ciphertext, key)
-        if not nonsense(plaintext.upper()):
-            is_meaningful = is_meaningful_dict(plaintext, threshold=threshold)
-        else:
-            is_meaningful = False
-        results.append((is_meaningful, key, plaintext))
     meaningful_results = [r for r in results if r[0]]
     non_meaningful_results = [r for r in results if not r[0]]
+
     if meaningful_results:
-        best_key, best_plaintext = meaningful_results[0][1], meaningful_results[0][2]
+        key, plaintext = meaningful_results[0][1], meaningful_results[0][2]
     else:
-        best_key, best_plaintext = (
-            non_meaningful_results[0][1],
-            non_meaningful_results[0][2],
-        )
-    return meaningful_results, non_meaningful_results, best_key, best_plaintext
+        key, plaintext = non_meaningful_results[0][1], non_meaningful_results[0][2]
+    return meaningful_results, non_meaningful_results, key, plaintext
 
 
 def main():
@@ -69,15 +62,15 @@ def main():
     output_path = "../Text/railfence_plaintext.txt"
 
     ciphertext = read_file(input_path)
-    meaningful_results, non_meaningful_results, best_key, best_plaintext = (
-        rail_fence_crack(ciphertext, max_key=9999)
+    meaningful_results, non_meaningful_results, key, plaintext = rail_fence_crack(
+        ciphertext
     )
 
     print_plaintext_no_key(
         meaningful_results,
         non_meaningful_results,
-        best_key,
-        best_plaintext,
+        key,
+        plaintext,
         output_path,
     )
 
