@@ -1,27 +1,8 @@
-import enchant
 from nostril import nonsense
-from railfence_decryptor import rail_fence_decrypt
 
-d = enchant.Dict("en_US")
-
-
-def read_file(file_path: str) -> str:
-    with open(file_path, "r", encoding="utf-8") as infile:
-        return infile.read()
-
-
-def write_file(file_path: str, content: str) -> None:
-    with open(file_path, "w", encoding="utf-8") as outfile:
-        outfile.write(content)
-
-
-def is_meaningful_dict(text: str, threshold: float = 0.03) -> bool:
-    words = [w for w in text.split() if w.isalpha()]
-    if not words:
-        return False
-    non_dict_words = sum(1 for w in words if not d.check(w))
-    gibberish_ratio = non_dict_words / len(words)
-    return gibberish_ratio <= threshold
+from Utils.io import read_file, print_plaintext_no_key
+from Utils.dict import is_meaningful_dict
+from RailFence.Decryptor.railfence_decryptor import rail_fence_decrypt
 
 
 def rail_fence_crack(ciphertext: str, max_key: int = 99999):
@@ -92,22 +73,12 @@ def main():
         rail_fence_crack(ciphertext, max_key=9999)
     )
 
-    print("=== MEANINGFUL CANDIDATES ===")
-    for is_meaningful, key, text in meaningful_results:
-        print(f"\033[92mKey: {key} - Meaningful: True\n" f"\033[97m{text}\n")
-
-    print("=== NON-MEANINGFUL CANDIDATES ===")
-    for is_meaningful, key, text in non_meaningful_results:
-        print(f"\033[91mKey: {key} - Meaningful: False\n" f"\033[97m{text}\n")
-
-    if not meaningful_results:
-        print("\033[93mWarning: No meaningful plaintext found.\033[97m")
-
-    write_file(output_path, best_plaintext)
-    print(
-        f"\033[96mSelected plaintext written to {output_path}: "
-        f"\033[95m(Key: {best_key})\n"
-        f"\033[97m{best_plaintext}"
+    print_plaintext_no_key(
+        meaningful_results,
+        non_meaningful_results,
+        best_key,
+        best_plaintext,
+        output_path,
     )
 
 

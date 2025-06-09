@@ -1,3 +1,6 @@
+from Utils.io import read_file, key_input, print_ciphertext
+
+
 def rail_fence_encrypt(text: str, num_rails: int) -> str:
     if num_rails <= 1 or num_rails >= len(text):
         return text
@@ -14,30 +17,15 @@ def rail_fence_encrypt(text: str, num_rails: int) -> str:
     return "".join(rails)
 
 
-def read_file(file_path: str) -> str:
-    with open(file_path, "r", encoding="utf-8") as infile:
-        return infile.read()
-
-
-def write_file(file_path: str, content: str) -> None:
-    with open(file_path, "w", encoding="utf-8") as outfile:
-        outfile.write(content)
-
-
 def main():
     input_path = "../../plaintext.txt"
     output_path = "../Text/railfence_ciphertext.txt"
+
     plaintext = read_file(input_path)
-    try:
-        key = int(input("Enter a key: "))
-    except ValueError:
-        print("\033[91mInvalid key. Please enter a valid integer.\033[97m")
-        return
+    key = key_input()
     ciphertext = rail_fence_encrypt(plaintext, key)
-    print("\033[92m\nCiphertext:\033[97m")
-    print(ciphertext)
-    write_file(output_path, ciphertext)
-    print(f"\033[96m\nCiphertext written to {output_path}\033[97m")
+
+    print_ciphertext(ciphertext, output_path)
 
 
 if __name__ == "__main__":
